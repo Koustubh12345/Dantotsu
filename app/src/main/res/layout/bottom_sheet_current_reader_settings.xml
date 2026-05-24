@@ -518,79 +518,39 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="-8dp"
             android:layout_marginBottom="16dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_marginHorizontal="16dp"
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="0dp"
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:alpha="0.8"
-                    android:fontFamily="@font/poppins_bold"
-                    android:text="Auto Scroll Speed"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:alpha="0.58"
-                    android:fontFamily="@font/poppins_family"
-                    android:text="Seconds per page (lower is faster)"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                app:cardBackgroundColor="@color/nav_bg_inv"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="0dp">
-
-                <ImageButton
-                    android:id="@+id/decrementAutoScrollSpeed"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_minus"
-                    app:tint="?attr/colorOnBackground" />
-            </androidx.cardview.widget.CardView>
-
-            <EditText
-                android:id="@+id/readerAutoScrollSpeed"
-                android:layout_width="48dp"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
+                android:alpha="0.8"
                 android:fontFamily="@font/poppins_bold"
-                android:gravity="center"
-                android:inputType="numberDecimal"
-                android:text="3.0"
-                android:textColor="?attr/colorOnBackground"
-                android:textSize="16sp" />
+                android:text="Auto Scroll Speed"
+                android:textSize="14sp" />
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                app:cardBackgroundColor="@color/nav_bg_inv"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="0dp">
+                android:alpha="0.58"
+                android:fontFamily="@font/poppins_family"
+                android:text="Adjust the speed"
+                android:textSize="12sp" />
 
-                <ImageButton
-                    android:id="@+id/incrementAutoScrollSpeed"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_add"
-                    app:tint="?attr/colorOnBackground" />
-            </androidx.cardview.widget.CardView>
+            <com.google.android.material.slider.Slider
+                android:id="@+id/readerAutoScrollSlider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:stepSize="0.5"
+                android:valueFrom="0.5"
+                android:valueTo="10.0"
+                android:value="3.0"
+                app:labelBehavior="floating"
+                app:thumbColor="?attr/colorPrimary"
+                app:trackColorActive="?attr/colorPrimary"
+                app:trackColorInactive="?attr/colorSurfaceVariant"
+                app:tickColorActive="@android:color/transparent"
+                app:tickColorInactive="@android:color/transparent"/>
 
         </LinearLayout>
 
