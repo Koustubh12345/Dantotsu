@@ -23,10 +23,14 @@ class ReaderSettingsDialogFragment : BottomSheetDialogFragment() {
     ): View {
         _binding =
             BottomSheetCurrentReaderSettingsBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
         val activity = requireActivity() as MangaReaderActivity
@@ -40,11 +44,12 @@ class ReaderSettingsDialogFragment : BottomSheetDialogFragment() {
 
         binding.readerDirection.setOnClickListener {
 
-            val nextIndex =
-                (settings.direction.ordinal + 1) % Directions.entries.size
+            val dirs = Directions.values()
 
-            settings.direction =
-                Directions.entries[nextIndex]
+            val nextIndex =
+                (settings.direction.ordinal + 1) % dirs.size
+
+            settings.direction = dirs[nextIndex]
 
             binding.readerDirectionText.text =
                 resources.getStringArray(R.array.manga_directions)[settings.direction.ordinal]
@@ -55,7 +60,7 @@ class ReaderSettingsDialogFragment : BottomSheetDialogFragment() {
             activity.applySettings()
         }
 
-        val layoutButtons = listOf(
+        val list = listOf(
             binding.readerPaged,
             binding.readerContinuousPaged,
             binding.readerContinuous
@@ -64,11 +69,12 @@ class ReaderSettingsDialogFragment : BottomSheetDialogFragment() {
         binding.readerPadding.isEnabled =
             settings.layout.ordinal != 0
 
-        fun updatePaddingAvailability(enable: Boolean) {
+        fun paddingAvailable(enable: Boolean) {
             binding.readerPadding.isEnabled = enable
         }
 
         binding.readerPadding.isChecked = settings.padding
+
         binding.readerPadding.setOnCheckedChangeListener { _, isChecked ->
             settings.padding = isChecked
             activity.applySettings()
@@ -85,21 +91,22 @@ class ReaderSettingsDialogFragment : BottomSheetDialogFragment() {
         binding.readerLayoutText.text =
             resources.getStringArray(R.array.manga_layouts)[settings.layout.ordinal]
 
-        var selectedLayout =
-            layoutButtons[settings.layout.ordinal]
+        var selected = list[settings.layout.ordinal]
 
-        selectedLayout.alpha = 1f
+        selected.alpha = 1f
 
-        layoutButtons.forEachIndexed { index, button ->
+        list.forEachIndexed { index, imageButton ->
 
-            button.setOnClickListener {
+            imageButton.setOnClickListener {
 
-                selectedLayout.alpha = 0.33f
-                selectedLayout = button
-                selectedLayout.alpha = 1f
+                selected.alpha = 0.33f
+
+                selected = imageButton
+
+                selected.alpha = 1f
 
                 settings.layout =
-                    CurrentReaderSettings.Layouts.entries
+                    CurrentReaderSettings.Layouts.values()
                         .getOrElse(index) {
                             CurrentReaderSettings.Layouts.CONTINUOUS
                         }
@@ -109,13 +116,13 @@ class ReaderSettingsDialogFragment : BottomSheetDialogFragment() {
 
                 activity.applySettings()
 
-                updatePaddingAvailability(
+                paddingAvailable(
                     settings.layout.ordinal != 0
                 )
             }
         }
 
-        val dualButtons = listOf(
+        val dualList = listOf(
             binding.readerDualNo,
             binding.readerDualAuto,
             binding.readerDualForce
@@ -125,20 +132,22 @@ class ReaderSettingsDialogFragment : BottomSheetDialogFragment() {
             settings.dualPageMode.toString()
 
         var selectedDual =
-            dualButtons[settings.dualPageMode.ordinal]
+            dualList[settings.dualPageMode.ordinal]
 
         selectedDual.alpha = 1f
 
-        dualButtons.forEachIndexed { index, button ->
+        dualList.forEachIndexed { index, imageButton ->
 
-            button.setOnClickListener {
+            imageButton.setOnClickListener {
 
                 selectedDual.alpha = 0.33f
-                selectedDual = button
+
+                selectedDual = imageButton
+
                 selectedDual.alpha = 1f
 
                 settings.dualPageMode =
-                    CurrentReaderSettings.DualPageModes.entries
+                    CurrentReaderSettings.DualPageModes.values()
                         .getOrElse(index) {
                             CurrentReaderSettings.DualPageModes.Automatic
                         }
