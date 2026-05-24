@@ -760,7 +760,7 @@ class MangaReaderActivity : AppCompatActivity() {
                 scrollToPosition(currentPage / (dualPage { 2 } ?: 1) - 1)
                 
                 autoScroll.attach(this, defaultSettings.direction)
-                autoScroll.speedSeconds = PrefManager.getCustomVal("manga_auto_scroll_speed", 3f)
+                autoScroll.speed = PrefManager.getCustomVal("manga_auto_scroll_speed", 3f)
                 
                 val autoScrollEnabled = PrefManager.getCustomVal("manga_auto_scroll_enabled", false)
                 if (autoScrollEnabled && !autoScroll.isRunning) {
@@ -768,6 +768,7 @@ class MangaReaderActivity : AppCompatActivity() {
                 } else if (!autoScrollEnabled && autoScroll.isRunning) {
                     autoScroll.stop()
                 }
+
             }
         } else {
             autoScroll.stop()

@@ -10,6 +10,7 @@ import ani.dantotsu.databinding.BottomSheetCurrentReaderSettingsBinding
 import ani.dantotsu.settings.CurrentReaderSettings
 import ani.dantotsu.settings.CurrentReaderSettings.Directions
 import ani.dantotsu.settings.saving.PrefManager
+import com.google.android.material.slider.Slider // ADDED SLIDER IMPORT
 
 class ReaderSettingsDialogFragment : BottomSheetDialogFragment() {
 
@@ -190,7 +191,6 @@ class ReaderSettingsDialogFragment : BottomSheetDialogFragment() {
             activity.applySettings()
         }
 
-
         binding.readerAutoScrollEnabled.isChecked =
             PrefManager.getCustomVal("manga_auto_scroll_enabled", false)
 
@@ -203,10 +203,10 @@ class ReaderSettingsDialogFragment : BottomSheetDialogFragment() {
 
         binding.readerAutoScrollSpeed.value = currentSpeed.coerceIn(0.5f, 10.0f)
 
-        binding.readerAutoScrollSpeed.addOnChangeListener { _, value, _ ->
+        binding.readerAutoScrollSpeed.addOnChangeListener(Slider.OnChangeListener { _, value, _ ->
             PrefManager.setCustomVal("manga_auto_scroll_speed", value)
             activity.applySettings()
-        }
+        })
     }
 
     override fun onDestroy() {
