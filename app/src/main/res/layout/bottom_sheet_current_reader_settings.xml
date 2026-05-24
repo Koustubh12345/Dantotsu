@@ -12,9 +12,8 @@
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:orientation="vertical"
-        android:paddingBottom="32dp">
-
-        <TextView
+        android:paddingBottom="32dp"
+        android:animateLayoutChanges="true"> <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -514,12 +513,14 @@
             app:thumbTint="@color/button_switch_track" />
 
         <LinearLayout
+            android:id="@+id/autoScrollSliderContainer" 
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="-8dp"
             android:layout_marginBottom="16dp"
             android:layout_marginHorizontal="16dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone"> 
 
             <TextView
                 android:layout_width="match_parent"
@@ -534,7 +535,7 @@
                 android:layout_height="wrap_content"
                 android:alpha="0.58"
                 android:fontFamily="@font/poppins_family"
-                android:text="Adjust the speed"
+                android:text="Adjust the reading velocity"
                 android:textSize="12sp" />
 
             <com.google.android.material.slider.Slider
@@ -545,7 +546,7 @@
                 android:valueFrom="0.5"
                 android:valueTo="10.0"
                 android:value="3.0"
-                app:labelBehavior="floating"
+                app:labelBehavior="floating" 
                 app:thumbColor="?attr/colorPrimary"
                 app:trackColorActive="?attr/colorPrimary"
                 app:trackColorInactive="?attr/colorSurfaceVariant"

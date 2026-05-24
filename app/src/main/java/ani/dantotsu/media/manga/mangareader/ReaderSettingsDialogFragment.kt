@@ -191,21 +191,31 @@ class ReaderSettingsDialogFragment : BottomSheetDialogFragment() {
             activity.applySettings()
         }
 
-        binding.readerAutoScrollEnabled.isChecked =
-            PrefManager.getCustomVal("manga_auto_scroll_enabled", false)
+        val isAutoScrollEnabled = PrefManager.getCustomVal("manga_auto_scroll_enabled", false)
+        binding.readerAutoScrollEnabled.isChecked = isAutoScrollEnabled
+        
+        binding.autoScrollSliderContainer.visibility = if (isAutoScrollEnabled) View.VISIBLE else View.GONE
 
         binding.readerAutoScrollEnabled.setOnCheckedChangeListener { _, isChecked ->
             PrefManager.setCustomVal("manga_auto_scroll_enabled", isChecked)
-            activity.applySettings()
+            
+            binding.autoScrollSliderContainer.visibility = if (isChecked) View.VISIBLE else View.GONE
+            
+
+            if (isChecked) {
+                activity.autoScroll.start()
+            } else {
+                activity.autoScroll.stop()
+            }
         }
 
         val currentSpeed = PrefManager.getCustomVal("manga_auto_scroll_speed", 3f)
-
         binding.readerAutoScrollSlider.value = currentSpeed.coerceIn(0.5f, 10.0f)
 
         binding.readerAutoScrollSlider.addOnChangeListener(Slider.OnChangeListener { _, value, _ ->
             PrefManager.setCustomVal("manga_auto_scroll_speed", value)
-            activity.applySettings()
+
+            activity.autoScroll.speed = value
         })
     }
 
