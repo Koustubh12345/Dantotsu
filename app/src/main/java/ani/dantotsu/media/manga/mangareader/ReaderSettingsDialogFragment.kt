@@ -12,6 +12,7 @@ import ani.dantotsu.settings.CurrentReaderSettings.Directions
 import ani.dantotsu.settings.saving.PrefManager
 
 class ReaderSettingsDialogFragment : BottomSheetDialogFragment() {
+
     private var _binding: BottomSheetCurrentReaderSettingsBinding? = null
     private val binding get() = _binding!!
 
@@ -20,35 +21,50 @@ class ReaderSettingsDialogFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = BottomSheetCurrentReaderSettingsBinding.inflate(inflater, container, false)
+        _binding =
+            BottomSheetCurrentReaderSettingsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val activity = requireActivity() as MangaReaderActivity
         val settings = activity.defaultSettings
 
         binding.readerDirectionText.text =
             resources.getStringArray(R.array.manga_directions)[settings.direction.ordinal]
-        binding.readerDirection.rotation = 90f * (settings.direction.ordinal)
+
+        binding.readerDirection.rotation =
+            90f * settings.direction.ordinal
+
         binding.readerDirection.setOnClickListener {
+
+            val nextIndex =
+                (settings.direction.ordinal + 1) % Directions.entries.size
+
             settings.direction =
-                Directions[settings.direction.ordinal + 1] ?: Directions.TOP_TO_BOTTOM
+                Directions.entries[nextIndex]
+
             binding.readerDirectionText.text =
                 resources.getStringArray(R.array.manga_directions)[settings.direction.ordinal]
-            binding.readerDirection.rotation = 90f * (settings.direction.ordinal)
+
+            binding.readerDirection.rotation =
+                90f * settings.direction.ordinal
+
             activity.applySettings()
         }
 
-        val list = listOf(
+        val layoutButtons = listOf(
             binding.readerPaged,
             binding.readerContinuousPaged,
             binding.readerContinuous
         )
 
-        binding.readerPadding.isEnabled = settings.layout.ordinal != 0
-        fun paddingAvailable(enable: Boolean) {
+        binding.readerPadding.isEnabled =
+            settings.layout.ordinal != 0
+
+        fun updatePaddingAvailability(enable: Boolean) {
             binding.readerPadding.isEnabled = enable
         }
 
@@ -58,7 +74,9 @@ class ReaderSettingsDialogFragment : BottomSheetDialogFragment() {
             activity.applySettings()
         }
 
-        binding.readerCropBorders.isChecked = settings.cropBorders
+        binding.readerCropBorders.isChecked =
+            settings.cropBorders
+
         binding.readerCropBorders.setOnCheckedChangeListener { _, isChecked ->
             settings.cropBorders = isChecked
             activity.applySettings()
@@ -66,116 +84,185 @@ class ReaderSettingsDialogFragment : BottomSheetDialogFragment() {
 
         binding.readerLayoutText.text =
             resources.getStringArray(R.array.manga_layouts)[settings.layout.ordinal]
-        var selected = list[settings.layout.ordinal]
-        selected.alpha = 1f
 
-        list.forEachIndexed { index, imageButton ->
-            imageButton.setOnClickListener {
-                selected.alpha = 0.33f
-                selected = imageButton
-                selected.alpha = 1f
+        var selectedLayout =
+            layoutButtons[settings.layout.ordinal]
+
+        selectedLayout.alpha = 1f
+
+        layoutButtons.forEachIndexed { index, button ->
+
+            button.setOnClickListener {
+
+                selectedLayout.alpha = 0.33f
+                selectedLayout = button
+                selectedLayout.alpha = 1f
+
                 settings.layout =
-                    CurrentReaderSettings.Layouts[index] ?: CurrentReaderSettings.Layouts.CONTINUOUS
+                    CurrentReaderSettings.Layouts.entries
+                        .getOrElse(index) {
+                            CurrentReaderSettings.Layouts.CONTINUOUS
+                        }
+
                 binding.readerLayoutText.text =
                     resources.getStringArray(R.array.manga_layouts)[settings.layout.ordinal]
+
                 activity.applySettings()
-                paddingAvailable(settings.layout.ordinal != 0)
+
+                updatePaddingAvailability(
+                    settings.layout.ordinal != 0
+                )
             }
         }
 
-        val dualList = listOf(
+        val dualButtons = listOf(
             binding.readerDualNo,
             binding.readerDualAuto,
             binding.readerDualForce
         )
 
-        binding.readerDualPageText.text = settings.dualPageMode.toString()
-        var selectedDual = dualList[settings.dualPageMode.ordinal]
+        binding.readerDualPageText.text =
+            settings.dualPageMode.toString()
+
+        var selectedDual =
+            dualButtons[settings.dualPageMode.ordinal]
+
         selectedDual.alpha = 1f
 
-        dualList.forEachIndexed { index, imageButton ->
-            imageButton.setOnClickListener {
+        dualButtons.forEachIndexed { index, button ->
+
+            button.setOnClickListener {
+
                 selectedDual.alpha = 0.33f
-                selectedDual = imageButton
+                selectedDual = button
                 selectedDual.alpha = 1f
-                settings.dualPageMode = CurrentReaderSettings.DualPageModes[index]
-                    ?: CurrentReaderSettings.DualPageModes.Automatic
-                binding.readerDualPageText.text = settings.dualPageMode.toString()
+
+                settings.dualPageMode =
+                    CurrentReaderSettings.DualPageModes.entries
+                        .getOrElse(index) {
+                            CurrentReaderSettings.DualPageModes.Automatic
+                        }
+
+                binding.readerDualPageText.text =
+                    settings.dualPageMode.toString()
+
                 activity.applySettings()
             }
         }
-        binding.readerTrueColors.isChecked = settings.trueColors
+
+        binding.readerTrueColors.isChecked =
+            settings.trueColors
+
         binding.readerTrueColors.setOnCheckedChangeListener { _, isChecked ->
             settings.trueColors = isChecked
             activity.applySettings()
         }
 
-        binding.readerImageRotation.isChecked = settings.rotation
+        binding.readerImageRotation.isChecked =
+            settings.rotation
+
         binding.readerImageRotation.setOnCheckedChangeListener { _, isChecked ->
             settings.rotation = isChecked
             activity.applySettings()
         }
 
-        binding.readerHorizontalScrollBar.isChecked = settings.horizontalScrollBar
+        binding.readerHorizontalScrollBar.isChecked =
+            settings.horizontalScrollBar
+
         binding.readerHorizontalScrollBar.setOnCheckedChangeListener { _, isChecked ->
             settings.horizontalScrollBar = isChecked
             activity.applySettings()
         }
 
-        binding.readerKeepScreenOn.isChecked = settings.keepScreenOn
+        binding.readerKeepScreenOn.isChecked =
+            settings.keepScreenOn
+
         binding.readerKeepScreenOn.setOnCheckedChangeListener { _, isChecked ->
             settings.keepScreenOn = isChecked
             activity.applySettings()
         }
 
-        binding.readerHideScrollBar.isChecked = settings.hideScrollBar
+        binding.readerHideScrollBar.isChecked =
+            settings.hideScrollBar
+
         binding.readerHideScrollBar.setOnCheckedChangeListener { _, isChecked ->
             settings.hideScrollBar = isChecked
             activity.applySettings()
         }
 
-        binding.readerHidePageNumbers.isChecked = settings.hidePageNumbers
+        binding.readerHidePageNumbers.isChecked =
+            settings.hidePageNumbers
+
         binding.readerHidePageNumbers.setOnCheckedChangeListener { _, isChecked ->
             settings.hidePageNumbers = isChecked
             activity.applySettings()
         }
 
-        binding.readerOverscroll.isChecked = settings.overScrollMode
+        binding.readerOverscroll.isChecked =
+            settings.overScrollMode
+
         binding.readerOverscroll.setOnCheckedChangeListener { _, isChecked ->
             settings.overScrollMode = isChecked
             activity.applySettings()
         }
 
-        binding.readerVolumeButton.isChecked = settings.volumeButtons
+        binding.readerVolumeButton.isChecked =
+            settings.volumeButtons
+
         binding.readerVolumeButton.setOnCheckedChangeListener { _, isChecked ->
             settings.volumeButtons = isChecked
             activity.applySettings()
         }
 
-        binding.readerWrapImage.isChecked = settings.wrapImages
+        binding.readerWrapImage.isChecked =
+            settings.wrapImages
+
         binding.readerWrapImage.setOnCheckedChangeListener { _, isChecked ->
             settings.wrapImages = isChecked
             activity.applySettings()
         }
 
-        binding.readerLongClickImage.isChecked = settings.longClickImage
+        binding.readerLongClickImage.isChecked =
+            settings.longClickImage
+
         binding.readerLongClickImage.setOnCheckedChangeListener { _, isChecked ->
             settings.longClickImage = isChecked
             activity.applySettings()
         }
 
-        binding.readerAutoScrollEnabled.isChecked = PrefManager.getCustomVal("manga_auto_scroll_enabled", false)
+        binding.readerAutoScrollEnabled.isChecked =
+            PrefManager.getCustomVal(
+                "manga_auto_scroll_enabled",
+                false
+            )
+
         binding.readerAutoScrollEnabled.setOnCheckedChangeListener { _, isChecked ->
-            PrefManager.setCustomVal("manga_auto_scroll_enabled", isChecked)
+
+            PrefManager.setCustomVal(
+                "manga_auto_scroll_enabled",
+                isChecked
+            )
+
             activity.applySettings()
         }
 
-        val currentSpeed = PrefManager.getCustomVal("manga_auto_scroll_speed", 3f)
-        binding.readerAutoScrollSpeed.value = currentSpeed.coerceIn(0.5f, 10.0f)
+        val currentSpeed =
+            PrefManager.getCustomVal(
+                "manga_auto_scroll_speed",
+                3f
+            )
+
+        binding.readerAutoScrollSpeed.value =
+            currentSpeed.coerceIn(0.5f, 10.0f)
 
         binding.readerAutoScrollSpeed.addOnChangeListener { _, value, _ ->
-            PrefManager.setCustomVal("manga_auto_scroll_speed", value)
-            activity.applySettings() // Dynamically applies speed while running
+
+            PrefManager.setCustomVal(
+                "manga_auto_scroll_speed",
+                value
+            )
+
+            activity.applySettings()
         }
     }
 
@@ -185,6 +272,7 @@ class ReaderSettingsDialogFragment : BottomSheetDialogFragment() {
     }
 
     companion object {
-        fun newInstance() = ReaderSettingsDialogFragment()
+        fun newInstance() =
+            ReaderSettingsDialogFragment()
     }
 }
