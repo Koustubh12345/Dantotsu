@@ -1,19 +1,44 @@
 package ani.dantotsu.media.manga.mangareader
 
+import android.os.Handler
+import android.os.Looper
 import androidx.recyclerview.widget.RecyclerView
 import ani.dantotsu.settings.CurrentReaderSettings
-import java.util.Timer
-import java.util.TimerTask
 
 class MangaReaderAutoScroll {
 
-    var speedSeconds: Float = 3f
+    var speed: Float = 3f 
     var isRunning: Boolean = false
         private set
 
-    private var timer: Timer? = null
     private var recyclerView: RecyclerView? = null
     private var direction: CurrentReaderSettings.Directions = CurrentReaderSettings.Directions.TOP_TO_BOTTOM
+    
+    private val handler = Handler(Looper.getMainLooper())
+    private var accumulatedScroll = 0f
+
+    private val scrollRunnable = object : Runnable {
+        override fun run() {
+            val rv = recyclerView
+            if (!isRunning || rv == null) return
+
+            accumulatedScroll += speed 
+            val pixelsToScroll = accumulatedScroll.toInt()
+            
+            if (pixelsToScroll != 0) {
+                accumulatedScroll -= pixelsToScroll
+                
+                when (direction) {
+                    CurrentReaderSettings.Directions.TOP_TO_BOTTOM -> rv.scrollBy(0, pixelsToScroll)
+                    CurrentReaderSettings.Directions.BOTTOM_TO_TOP -> rv.scrollBy(0, -pixelsToScroll)
+                    CurrentReaderSettings.Directions.LEFT_TO_RIGHT -> rv.scrollBy(pixelsToScroll, 0)
+                    CurrentReaderSettings.Directions.RIGHT_TO_LEFT -> rv.scrollBy(-pixelsToScroll, 0)
+                }
+            }
+            
+            handler.postDelayed(this, 16L) 
+        }
+    }
 
     fun attach(rv: RecyclerView, dir: CurrentReaderSettings.Directions) {
         recyclerView = rv
@@ -22,39 +47,15 @@ class MangaReaderAutoScroll {
 
     fun start() {
         if (isRunning) stop()
-        val rv = recyclerView ?: return
+        if (recyclerView == null) return
         isRunning = true
-        val tickMs = 50L
-        
-        val displayMetrics = rv.context.resources.displayMetrics
-        val baseSize = if (direction == CurrentReaderSettings.Directions.TOP_TO_BOTTOM || direction == CurrentReaderSettings.Directions.BOTTOM_TO_TOP) {
-            displayMetrics.heightPixels
-        } else {
-            displayMetrics.widthPixels
-        }
-
-        val pxPerTick = (baseSize / speedSeconds.coerceAtLeast(0.5f) * tickMs / 1000f).toInt().coerceAtLeast(1)
-
-        timer = Timer()
-        timer?.scheduleAtFixedRate(object : TimerTask() {
-            override fun run() {
-                rv.post {
-                    when (direction) {
-                        CurrentReaderSettings.Directions.TOP_TO_BOTTOM -> rv.scrollBy(0, pxPerTick)
-                        CurrentReaderSettings.Directions.BOTTOM_TO_TOP -> rv.scrollBy(0, -pxPerTick)
-                        CurrentReaderSettings.Directions.LEFT_TO_RIGHT -> rv.scrollBy(pxPerTick, 0)
-                        CurrentReaderSettings.Directions.RIGHT_TO_LEFT -> rv.scrollBy(-pxPerTick, 0)
-                    }
-                }
-            }
-        }, tickMs, tickMs)
+        accumulatedScroll = 0f
+        handler.post(scrollRunnable)
     }
 
     fun stop() {
         isRunning = false
-        timer?.cancel()
-        timer?.purge()
-        timer = null
+        handler.removeCallbacks(scrollRunnable)
     }
 
     fun toggle(): Boolean {

@@ -171,33 +171,11 @@ class ReaderSettingsDialogFragment : BottomSheetDialogFragment() {
         }
 
         val currentSpeed = PrefManager.getCustomVal("manga_auto_scroll_speed", 3f)
-        binding.readerAutoScrollSpeed.setText(currentSpeed.toString())
+        binding.readerAutoScrollSpeed.value = currentSpeed.coerceIn(0.5f, 10.0f)
 
-        binding.readerAutoScrollSpeed.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
-                val value = binding.readerAutoScrollSpeed.text.toString().toFloatOrNull() ?: 3f
-                val clampedValue = value.coerceAtLeast(0.5f)
-                PrefManager.setCustomVal("manga_auto_scroll_speed", clampedValue)
-                binding.readerAutoScrollSpeed.setText(clampedValue.toString())
-                activity.applySettings()
-            }
-        }
-
-        binding.incrementAutoScrollSpeed.setOnClickListener {
-            val value = binding.readerAutoScrollSpeed.text.toString().toFloatOrNull() ?: 3f
-            val newValue = value + 0.5f // Higher seconds = slower scroll
-            PrefManager.setCustomVal("manga_auto_scroll_speed", newValue)
-            binding.readerAutoScrollSpeed.setText(newValue.toString())
-            activity.applySettings()
-        }
-
-        binding.decrementAutoScrollSpeed.setOnClickListener {
-            val value = binding.readerAutoScrollSpeed.text.toString().toFloatOrNull() ?: 3f
-            val newValue = value - 0.5f // Lower seconds = faster scroll
-            val clampedValue = newValue.coerceAtLeast(0.5f) // Prevent dividing by zero
-            PrefManager.setCustomVal("manga_auto_scroll_speed", clampedValue)
-            binding.readerAutoScrollSpeed.setText(clampedValue.toString())
-            activity.applySettings()
+        binding.readerAutoScrollSpeed.addOnChangeListener { _, value, _ ->
+            PrefManager.setCustomVal("manga_auto_scroll_speed", value)
+            activity.applySettings() // Dynamically applies speed while running
         }
     }
 
